@@ -1374,7 +1374,7 @@ function format_text($text, $format = FORMAT_MOODLE, $options = null, $courseidd
         // this regex to remove those tags.
         $text = trim(preg_replace('~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $domdoc->saveHTML($domdoc->documentElement)));
     }
-
+    
     return $text;
 }
 
@@ -1506,6 +1506,8 @@ function format_string($string, $striplinks = true, $options = null) {
 
     // Store to cache.
     $strcache[$md5] = $string;
+
+    
 
     return $string;
 }

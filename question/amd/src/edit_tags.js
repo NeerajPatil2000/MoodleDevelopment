@@ -268,6 +268,7 @@ define([
 
     return {
         init: function(root) {
+            window.console.log(`The first name was and the last name was `);
             root = $(root);
             registerEventListeners(root);
         }

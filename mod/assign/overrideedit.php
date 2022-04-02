@@ -185,23 +185,23 @@ if ($mform->is_cancelled()) {
         )
     );
     if (!empty($override->id)) {
-        $fromform->id = $override->id;
-        $DB->update_record('assign_overrides', $fromform);
-        $cachekey = $groupmode ? "{$fromform->assignid}_g_{$fromform->groupid}" : "{$fromform->assignid}_u_{$fromform->userid}";
-        cache::make('mod_assign', 'overrides')->delete($cachekey);
+        // $fromform->id = $override->id;
+        // $DB->update_record('assign_overrides', $fromform);
+        // $cachekey = $groupmode ? "{$fromform->assignid}_g_{$fromform->groupid}" : "{$fromform->assignid}_u_{$fromform->userid}";
+        // cache::make('mod_assign', 'overrides')->delete($cachekey);
 
-        // Determine which override updated event to fire.
-        $params['objectid'] = $override->id;
-        if (!$groupmode) {
-            $params['relateduserid'] = $fromform->userid;
-            $event = \mod_assign\event\user_override_updated::create($params);
-        } else {
-            $params['other']['groupid'] = $fromform->groupid;
-            $event = \mod_assign\event\group_override_updated::create($params);
-        }
+        // // Determine which override updated event to fire.
+        // $params['objectid'] = $override->id;
+        // if (!$groupmode) {
+        //     $params['relateduserid'] = $fromform->userid;
+        //     $event = \mod_assign\event\user_override_updated::create($params);
+        // } else {
+        //     $params['other']['groupid'] = $fromform->groupid;
+        //     $event = \mod_assign\event\group_override_updated::create($params);
+        // }
 
-        // Trigger the override updated event.
-        $event->trigger();
+        // // Trigger the override updated event.
+        // $event->trigger();
     } else {
         unset($fromform->id);
         $fromform->id = $DB->insert_record('assign_overrides', $fromform);
@@ -219,26 +219,26 @@ if ($mform->is_cancelled()) {
             }
 
             $DB->update_record('assign_overrides', $fromform);
-            reorder_group_overrides($assigninstance->id);
+            // reorder_group_overrides($assigninstance->id);
         }
-        $cachekey = $groupmode ? "{$fromform->assignid}_g_{$fromform->groupid}" : "{$fromform->assignid}_u_{$fromform->userid}";
-        cache::make('mod_assign', 'overrides')->delete($cachekey);
+        // $cachekey = $groupmode ? "{$fromform->assignid}_g_{$fromform->groupid}" : "{$fromform->assignid}_u_{$fromform->userid}";
+        // cache::make('mod_assign', 'overrides')->delete($cachekey);
 
-        // Determine which override created event to fire.
-        $params['objectid'] = $fromform->id;
-        if (!$groupmode) {
-            $params['relateduserid'] = $fromform->userid;
-            $event = \mod_assign\event\user_override_created::create($params);
-        } else {
-            $params['other']['groupid'] = $fromform->groupid;
-            $event = \mod_assign\event\group_override_created::create($params);
-        }
+        // // Determine which override created event to fire.
+        // $params['objectid'] = $fromform->id;
+        // if (!$groupmode) {
+        //     $params['relateduserid'] = $fromform->userid;
+        //     $event = \mod_assign\event\user_override_created::create($params);
+        // } else {
+        //     $params['other']['groupid'] = $fromform->groupid;
+        //     $event = \mod_assign\event\group_override_created::create($params);
+        // }
 
-        // Trigger the override created event.
-        $event->trigger();
+        // // Trigger the override created event.
+        // $event->trigger();
     }
 
-    assign_update_events($assign, $fromform);
+    // assign_update_events($assign, $fromform);
 
     if (!empty($fromform->submitbutton)) {
         redirect($overridelisturl);

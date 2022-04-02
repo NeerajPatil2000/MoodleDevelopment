@@ -148,6 +148,9 @@ if (file_exists($modmoodleform)) {
 
 $mformclassname = 'mod_'.$module->name.'_mod_form';
 $mform = new $mformclassname($data, $cw->section, $cm, $course);
+
+// var_dump($data);
+
 $mform->set_data($data);
 
 if ($mform->is_cancelled()) {

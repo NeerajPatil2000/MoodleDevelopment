@@ -25,7 +25,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-
 /**
  * Generates the output for matching questions.
  *
@@ -36,13 +35,15 @@ class qtype_match_renderer extends qtype_with_combined_feedback_renderer {
 
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
-
+        global $PAGE;
+        global $CFG;
+                    
         $question = $qa->get_question();
         $stemorder = $question->get_stem_order();
         $response = $qa->get_last_qt_data();
 
         $choices = $this->format_choices($question);
-
+        
         $result = '';
         $result .= html_writer::tag('div', $question->format_questiontext($qa),
                 array('class' => 'qtext'));
@@ -59,7 +60,7 @@ class qtype_match_renderer extends qtype_with_combined_feedback_renderer {
             $fieldname = 'sub' . $key;
 
             $result .= html_writer::tag('td', $this->format_stem_text($qa, $stemid),
-                    array('class' => 'text'));
+                    array('class' => 'text align-middle'));
 
             $classes = 'control';
             $feedbackimage = '';
@@ -76,15 +77,18 @@ class qtype_match_renderer extends qtype_with_combined_feedback_renderer {
                 $classes .= ' ' . $this->feedback_class($fraction);
                 $feedbackimage = $this->feedback_image($fraction);
             }
-
+            $name = $qa->get_qt_field_name('sub' . $key);
+            $name = preg_replace("/[^a-zA-Z0-9]/", "", $name);
             $result .= html_writer::tag('td',
                     html_writer::label(get_string('answer', 'qtype_match', $i),
                             'menu' . $qa->get_qt_field_name('sub' . $key), false,
                             array('class' => 'accesshide')) .
-                    html_writer::select($choices, $qa->get_qt_field_name('sub' . $key), $selected,
-                            array('0' => 'choose'), array('disabled' => $options->readonly, 'class' => 'custom-select ml-1')) .
-                    ' ' . $feedbackimage, array('class' => $classes));
-
+                        html_writer::droplist($choices, $qa->get_qt_field_name('sub' . $key), $selected,
+                            array('0' => 'choose'), array('disabled' => $options->readonly, 'class' => $name.' '.'filter_mathjaxloader_equation')) .
+                            ' ' . $feedbackimage, array('class' => $classes ));
+            $result.=html_writer::select($choices, $qa->get_qt_field_name('sub' . $key), $selected,
+                            array('0' => 'choose'), array('disabled' => $options->readonly, 'class' => $name.' '.'custom-select ml-1','style'=>'display: none;'));
+        
             $result .= html_writer::end_tag('tr');
             $parity = 1 - $parity;
             $i++;
@@ -99,8 +103,9 @@ class qtype_match_renderer extends qtype_with_combined_feedback_renderer {
                     $question->get_validation_error($response),
                     array('class' => 'validationerror'));
         }
-
+        $PAGE->requires->js(new moodle_url($CFG->wwwroot.'/question/type/match/amd/index.js'));
         return $result;
+        
     }
 
     public function specific_feedback(question_attempt $qa) {
@@ -125,6 +130,7 @@ class qtype_match_renderer extends qtype_with_combined_feedback_renderer {
         $choices = array();
         foreach ($question->get_choice_order() as $key => $choiceid) {
             $choices[$key] = format_string($question->choices[$choiceid]);
+
         }
         return $choices;
     }

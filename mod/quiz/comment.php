@@ -76,11 +76,13 @@ $summarydata['quizname'] = array(
 // Question name.
 $summarydata['questionname'] = array(
     'title'   => get_string('question', 'quiz'),
+    // 'content' => "BTP",
     'content' => $attemptobj->get_question_name($slot),
 );
 
 // Process any data that was submitted.
 if (data_submitted() && confirm_sesskey()) {
+    
     if (optional_param('submit', false, PARAM_BOOL) && question_engine::is_manual_grade_in_range($attemptobj->get_uniqueid(), $slot)) {
         $transaction = $DB->start_delegated_transaction();
         $attemptobj->process_submitted_actions(time());
@@ -111,15 +113,83 @@ echo $output->review_summary_table($summarydata, 0);
 
 // Print the comment form.
 echo '<form method="post" class="mform" id="manualgradingform" action="' .
-        $CFG->wwwroot . '/mod/quiz/comment.php">';
+                                $CFG->wwwroot . '/mod/quiz/comment.php">';
+// echo '<input id="id_submitbutton" type="submit" name="submit" class="btn btn-primary" value="annotate"/>';
 echo $attemptobj->render_question_for_commenting($slot);
+$qa=$attemptobj->get_question_attempt($slot);
+$options = $attemptobj->get_display_options(true);
+$files = $qa->get_last_qt_files('attachments', $options->context->id);
+// var_dump($files);
+$fileurl = "";
+foreach ($files as $file) {
+    $out = $qa->get_response_file_url($file);
+    $url = (explode("?", $out))[0];
+    $fileurl = $url;
+    // var_dump($out);
+}
+
+
+
+$filename = $fileurl;
+
+
+// foreach ($files as $file) {
+//     $temp = $qa->get_response_file_url($file);
+//     // var_dump($temp);
+//     $st = explode("?",$temp);
+//     var_dump($st);
+// }
+
+// file API
+// $fs = get_file_storage();
+
+// // // Prepare file record object
+// $fileinfo = array(
+//     'contextid' => $options->context->id, // ID of context
+//     'component' => 'mod_mymodule',     // usually = table name
+//     'filearea' => 'myarea',     // usually = table name
+//     'itemid' => 9,               // usually = ID of row in table
+//     'filepath' => '/',           // any path beginning and ending in /
+//     'mimetype' => 'application/pdf',
+//     'filename' => 'myfile.pdf'); // any filename
+
+// // // Create file containing text 'hello world'
+// $val="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+// $fs->create_file_from_url($fileinfo, $val);
+
+// $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
+//                       $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
+
+
+// $fs->add_file_to_pool('/');
+
+
+// Read contents
+// if ($file) {
+//     $contents = $file->get_content();
+//     echo "<h1>" . $contents . "</h1>";
+//     $file->delete();
+// } else {
+//     echo "<h1>FILE DOESN'T EXISTS</h1>";
+// }
+
+// $out = $qa->get_response_file_url($file);
+// $url = (explode("?", $out))[0];
+// $var_dump($out);
+// $fileurl = $url;
+// $filename = $file->get_content();
+
+include "./myindex.html";
 ?>
+<script type="text/javascript">var filename = "<?= $filename ?>";</script>
+<script type="text/javascript" src="myscript.js"></script>
 <div>
     <input type="hidden" name="attempt" value="<?php echo $attemptobj->get_attemptid(); ?>" />
     <input type="hidden" name="slot" value="<?php echo $slot; ?>" />
     <input type="hidden" name="slots" value="<?php echo $slot; ?>" />
     <input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
 </div>
+<!-- <input id="id_submitbutton" type="submit" name="submit" class="btn btn-primary" value="annotate"/> -->
 <fieldset class="hidden">
     <div>
         <div class="fitem fitem_actionbuttons fitem_fsubmit">

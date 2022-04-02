@@ -442,7 +442,7 @@ class assign {
         $result = array();
 
         $names = core_component::get_plugin_list($subtype);
-
+        // var_dump($names);
         foreach ($names as $name => $path) {
             if (file_exists($path . '/locallib.php')) {
                 require_once($path . '/locallib.php');
