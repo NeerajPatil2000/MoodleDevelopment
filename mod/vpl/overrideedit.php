@@ -18,7 +18,7 @@
  * This page handles editing and creation of vpl overrides
  *
  * @package   mod_vpl
- * @copyright 2016 Ilya Tregubov
+ * @copyright 2022 Neeraj Patil
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +33,7 @@ $cmid = optional_param('cmid', 0, PARAM_INT);
 $overrideid = optional_param('id', 0, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHA);
 $reset = optional_param('reset', false, PARAM_BOOL);
-$userid = optional_param('userid', null, PARAM_INT);
+$uid = optional_param('uid', null, PARAM_INT);
 $userchange = optional_param('userchange', false, PARAM_BOOL);
 
 $pagetitle = get_string('editoverride', 'vpl');
@@ -71,9 +71,8 @@ require_login($course, false, $cm);
 $context = context_module::instance($cm->id);
 $vpl = new mod_vpl( $cm->id );
 $vplinstance=$vpl->get_instance();
-// $assign = new assign($context, $cm, $course);
-// $assigninstance = $assign->get_instance($userid);
-$shouldadduserid = $userid && !empty($course->relativedatesmode);
+
+$shouldadduserid = $uid && !empty($course->relativedatesmode);
 $shouldresetform = optional_param('resetbutton', 0, PARAM_ALPHA) || ($userchange && $action !== 'duplicate');
 
 // Add or edit an override.
@@ -119,16 +118,15 @@ if ($action === 'duplicate') {
 }
 
 if ($shouldadduserid) {
-    $data->userid = $userid;
+    $data->userid = $uid;
 }
 
 $overridelisturl = new moodle_url('/mod/vpl/overrides.php', array('cmid' => $cm->id));
 if (!$groupmode) {
     $overridelisturl->param('mode', 'user');
 }
-var_dump($override);
 // Setup the form.
-$mform = new vpl_override_form($url, $cm, $vpl, $context, $groupmode, $override, $userid);
+$mform = new vpl_override_form($url, $cm, $vpl, $context, $groupmode, $override);
 $mform->set_data($data);
 
 if ($mform->is_cancelled()) {
@@ -137,12 +135,14 @@ if ($mform->is_cancelled()) {
 } else if ($shouldresetform) {
     $url->param('reset', true);
     if ($shouldadduserid) {
-        $url->param('userid', $userid);
+        $url->param('uid', $uid);
     }
     redirect($url);
 
 } else if (!$userchange && $fromform = $mform->get_data()) {
-    // Process the data.
+
+    var_dump($fromform);
+    foreach ($fromform->userid as $userid) {
     $fromform->vplid = $vplinstance->id;
 
     // Replace unchanged values with null.
@@ -156,8 +156,8 @@ if ($mform->is_cancelled()) {
     $userorgroupchanged = false;
     if (empty($override->id)) {
         $userorgroupchanged = true;
-    } else if (!empty($fromform->userid)) {
-        $userorgroupchanged = $fromform->userid !== $override->userid;
+    } else if (!empty($userid)) {
+        $userorgroupchanged = $userid !== $override->userid;
     } else {
         $userorgroupchanged = $fromform->groupid !== $override->groupid;
     }
@@ -165,7 +165,7 @@ if ($mform->is_cancelled()) {
     if ($userorgroupchanged) {
         $conditions = array(
                 'vplid' => $vplinstance->id,
-                'userid' => empty($fromform->userid) ? null : $fromform->userid,
+                'userid' => empty($userid) ? null : $userid,
                 'groupid' => empty($fromform->groupid) ? null : $fromform->groupid);
         if ($oldoverride = $DB->get_record('vpl_overrides', $conditions)) {
             // There is an old override, so we merge any new settings on top of
@@ -190,7 +190,9 @@ if ($mform->is_cancelled()) {
     if (!empty($override->id)) {
         
         $fromform->id = $override->id;
-        $DB->update_record('vpl_overrides', $fromform);
+        $dataobj = $fromform;
+        $dataobj->userid=$userid;
+        $DB->update_record('vpl_overrides', $dataobj);
         // $cachekey = $groupmode ? "{$fromform->vplid}_g_{$fromform->groupid}" : "{$fromform->vplid}_u_{$fromform->userid}";
         // cache::make('mod_vpl', 'overrides')->delete($cachekey);
 
@@ -209,7 +211,9 @@ if ($mform->is_cancelled()) {
     } else {
         unset($fromform->id);
         var_dump($fromform);
-        $fromform->id = $DB->insert_record('vpl_overrides', $fromform);
+        $dataobj = $fromform;
+        $dataobj->userid=$userid;
+        $fromform->id = $DB->insert_record('vpl_overrides', $dataobj);
         if ($groupmode) {
             $fromform->sortorder = 1;
 
@@ -224,6 +228,7 @@ if ($mform->is_cancelled()) {
             }
 
             $DB->update_record('vpl_overrides', $fromform);
+            //TODO :: Add this
             // reorder_group_overrides($assigninstance->id);
         }
         // $cachekey = $groupmode ? "{$fromform->assignid}_g_{$fromform->groupid}" : "{$fromform->assignid}_u_{$fromform->userid}";
@@ -244,6 +249,7 @@ if ($mform->is_cancelled()) {
     }
 
     // assign_update_events($assign, $fromform);
+    }
     vpl_prepare_update_events($vpl);
     if (!empty($fromform->submitbutton)) {
         redirect($overridelisturl);
@@ -254,7 +260,7 @@ if ($mform->is_cancelled()) {
     $url->param('action', 'duplicate');
     $url->param('id', $fromform->id);
     redirect($url);
-
+    
 }
 
 // Print the form.
@@ -268,3 +274,4 @@ echo $OUTPUT->heading(format_string($vplinstance->name, true, array('context' =>
 $mform->display();
 
 echo $OUTPUT->footer();
+?>

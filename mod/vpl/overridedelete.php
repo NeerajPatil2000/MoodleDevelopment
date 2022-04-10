@@ -18,7 +18,7 @@
  * This page handles deleting vpl overrides
  *
  * @package    mod_vpl
- * @copyright  2016 Ilya Tregubov
+ * @copyright  2022 Neeraj Patil
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -42,15 +42,15 @@ $vpl = new mod_vpl($cm->id, null);
 require_login($course, false, $cm);
 
 // Check the user has the required capabilities to modify an override.
-// require_capability('mod/assign:manageoverrides', $context);
+require_capability('mod/vpl:manageoverrides', $context);
 
 if ($override->groupid) {
     if (!groups_group_visible($override->groupid, $course, $cm)) {
-        print_error('invalidoverrideid', 'assign');
+        print_error('invalidoverrideid', 'vpl');
     }
 } else {
     if (!groups_user_groups_visible($course, $override->userid, $cm)) {
-        print_error('invalidoverrideid', 'assign');
+        print_error('invalidoverrideid', 'vpl');
     }
 }
 

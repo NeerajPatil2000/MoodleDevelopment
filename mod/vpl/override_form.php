@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/mod/assign/mod_form.php');
 /**
  * Form for editing settings overrides.
  *
- * @copyright  2016 Ilya Tregubov
+ * @copyright  2022 Neeraj Patil
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class vpl_override_form extends moodleform {
@@ -111,7 +111,7 @@ class vpl_override_form extends moodleform {
                 $groupchoices = array();
                 $groupchoices[$this->groupid] = groups_get_group_name($this->groupid);
                 $mform->addElement('select', 'groupid',
-                        get_string('overridegroup', 'assign'), $groupchoices);
+                        get_string('overridegroup', 'vpl'), $groupchoices);
                 $mform->freeze('groupid');
                 // Add a sortorder element.
                 $mform->addElement('hidden', 'sortorder', $this->sortorder);
@@ -183,7 +183,7 @@ class vpl_override_form extends moodleform {
                 if (empty($users)) {
                     // Generate an error.
                     $link = new moodle_url('/mod/vpl/overrides.php', array('cmid' => $cm->id));
-                    print_error('usersnone', 'assign', $link);
+                    print_error('usersnone', 'vpl', $link);
                 }
 
                 $userchoices = array();
@@ -204,8 +204,9 @@ class vpl_override_form extends moodleform {
                 if (count($userchoices) == 0) {
                     $userchoices[0] = get_string('none');
                 }
-                $mform->addElement('searchableselector', 'userid',
-                        get_string('overrideuser', 'assign'), $userchoices);
+                $select=$mform->addElement('searchableselector', 'userid',
+                        get_string('overrideuser', 'vpl'), $userchoices);
+                $select->setMultiple(true);
                 $mform->addRule('userid', get_string('required'), 'required', null, 'client');
 
                 if ($inrelativedatesmode) {

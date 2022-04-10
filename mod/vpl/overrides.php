@@ -18,7 +18,7 @@
  * This page handles listing of vpl overrides
  *
  * @package    mod_vpl
- * @copyright  2016 Ilya Tregubov
+ * @copyright  2022 Neeraj Patil
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

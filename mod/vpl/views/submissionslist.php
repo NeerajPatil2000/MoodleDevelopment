@@ -363,6 +363,7 @@ $table = new html_table();
 if ($showgrades) {
     $table->head = array (
             '',
+            'Select',
             '',
             $namesortselect,
             $strgrade,
@@ -371,6 +372,7 @@ if ($showgrades) {
     );
     $table->aling = array (
             'right',
+            'left',
             'left',
             'left',
             'right',
@@ -382,6 +384,7 @@ if ($showgrades) {
 } else if ($gradeable) {
     $table->head = array (
             '',
+            'Select',
             '',
             $namesortselect,
             $strsubtime,
@@ -402,6 +405,7 @@ if ($showgrades) {
             'right',
             'left',
             'left',
+            'left',
             'right',
             'right',
             'right',
@@ -411,6 +415,7 @@ if ($showgrades) {
 } else {
     $table->head = array (
             '',
+            'Select',
             '',
             $namesortselect,
             $strsubtime,
@@ -426,6 +431,7 @@ if ($showgrades) {
     );
     $table->aling = array (
             'right',
+            'left',
             'left',
             'left',
             'right',
@@ -577,12 +583,14 @@ foreach ($alldata as $data) {
     );
     $action = new popup_action( 'click', $url, 'privatecopyl' . $id, $options );
     $usernumber ++;
+    $checkbox = html_writer:: checkbox('','',false);
     $usernumberlink = $OUTPUT->action_link( $url, $usernumber, $action);
     $link = new moodle_url('/mod/vpl/forms/edit.php', array('id' => $id, 'userid' => $user->id, 'privatecopy' => 1));
     $actions->add(vpl_get_action_link('copy', $link));
     if ($showgrades) {
         $table->data [] = array (
                 $usernumberlink,
+                $checkbox,
                 $showphoto ? $vpl->user_picture( $user ) : '',
                 $vpl->fullname( $user, !$showphoto),
                 $grade,
@@ -592,6 +600,7 @@ foreach ($alldata as $data) {
     } else if ($gradeable) {
         $table->data [] = array (
                 $usernumberlink,
+                $checkbox,
                 $showphoto ? $vpl->user_picture( $user) : '',
                 $vpl->fullname( $user, !$showphoto),
                 $subtime,
@@ -604,6 +613,7 @@ foreach ($alldata as $data) {
     } else {
         $table->data [] = array (
                 $usernumberlink,
+                $checkbox,
                 $showphoto ? $vpl->user_picture( $user) : '',
                 $vpl->fullname( $user, !$showphoto),
                 $subtime,
@@ -696,7 +706,11 @@ if ($subselection != 'notgraded') {
 echo '<br>';
 @ob_flush();
 flush();
+echo '<form action="./extension.php">';
 echo html_writer::table( $table );
+$button=html_writer::tag('input','',['type'=>'submit','value'=>'Grant Extension','class'=>'btn btn-primary ']);
+echo html_writer::div( $button,'text-center');
+echo '</form>';
 if (count( $ngrades ) > 0) {
     echo '<br>';
     echo html_writer::table( $tablegraders );
