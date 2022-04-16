@@ -179,10 +179,7 @@ $filename = $fileurl;
 // $fileurl = $url;
 // $filename = $file->get_content();
 
-include "./myindex.html";
 ?>
-<script type="text/javascript">var filename = "<?= $filename ?>";</script>
-<script type="text/javascript" src="myscript.js"></script>
 <div>
     <input type="hidden" name="attempt" value="<?php echo $attemptobj->get_attemptid(); ?>" />
     <input type="hidden" name="slot" value="<?php echo $slot; ?>" />

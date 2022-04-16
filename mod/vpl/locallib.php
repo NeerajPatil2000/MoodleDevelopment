@@ -1018,3 +1018,31 @@ function vpl_get_webservice_urlbase($vpl) {
     return $CFG->wwwroot . '/mod/vpl/webservice.php?moodlewsrestformat=json'
            . '&wstoken=' . $token . '&id=' . $vpl->get_course_module()->id . '&wsfunction=';
 }
+
+
+/**
+ * Reorder the overrides starting at the override at the given startorder.
+ *
+ * @param int $vplid of the assigment
+ */
+function vpl_reorder_group_overrides($vplid) {
+    global $DB;
+
+    $i = 1;
+    if ($overrides = $DB->get_records('vpl_overrides', array('userid' => null, 'vplid' => $vplid), 'sortorder ASC')) {
+        foreach ($overrides as $override) {
+            $f = new stdClass();
+            $f->id = $override->id;
+            $f->sortorder = $i++;
+            $DB->update_record('vpl_overrides', $f);
+
+            // Update priorities of group overrides.
+            $params = [
+                'modulename' => 'vpl',
+                'instance' => $override->vplid,
+                'groupid' => $override->groupid
+            ];
+            $DB->set_field('event', 'priority', $f->sortorder, $params);
+        }
+    }
+}

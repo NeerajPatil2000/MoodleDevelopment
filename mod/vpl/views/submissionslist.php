@@ -30,6 +30,7 @@ require_once($CFG->dirroot.'/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl_submission_CE.class.php');
 require_once($CFG->dirroot.'/mod/vpl/views/sh_factory.class.php');
 
+
 class vpl_submissionlist_order {
     protected static $field; // Field to compare.
     protected static $ascending; // Value to return when ascending or descending order.
@@ -226,7 +227,11 @@ $nevaluation = optional_param( 'nevaluation', 0, PARAM_INT );
 $showgrades = optional_param( 'showgrades', 0, PARAM_INT );
 $sort = vpl_get_set_session_var( 'subsort', 'lastname', 'sort' );
 $sortdir = vpl_get_set_session_var( 'subsortdir', 'move', 'sortdir' );
-$subselection = vpl_get_set_session_var( 'subselection', 'allsubmissions', 'selection' );
+// changed the default subselection to 'all'.
+$subselection = vpl_get_set_session_var( 'subselection', 'all', 'selection' );
+// This form is used to implement functionality such as grant extension.
+require_once($CFG->dirroot . '/mod/vpl/views/gradingbatchoperationsform.php');
+
 if ($evaluate > 0) {
     require_once($CFG->dirroot.'/mod/vpl/editor/editor_utility.php');
     vpl_editor_util::generate_requires_evaluation();
@@ -241,8 +246,19 @@ $cm = $vpl->get_course_module();
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
 \mod_vpl\event\vpl_all_submissions_viewed::log( $vpl );
 
-$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
+$batchformparams = array('cm'=>$cm->id);
+$gradingbatchoperationsform = new mod_vpl_grading_batch_operations_form(null,$batchformparams,'post');
 
+if ($fromform = $gradingbatchoperationsform->get_data()) {
+  //In this case you process validated data. $mform->get_data() returns data posted in form.
+  $overrideediturl = new moodle_url('/mod/vpl/overrideedit.php',array('cmid'=> $cm->id,'action'=>$fromform->action,'selecteduser'=>$fromform->selecteduser));
+  redirect($overrideediturl);
+  
+} 
+
+$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
+// This file is necessary to implement the grant extension functionality.
+$PAGE->requires->js(new moodle_url($CFG->wwwroot.'/mod/vpl/amd/src/index.js'));
 // Print header.
 $vpl->print_header( get_string( 'submissionslist', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
@@ -583,7 +599,7 @@ foreach ($alldata as $data) {
     );
     $action = new popup_action( 'click', $url, 'privatecopyl' . $id, $options );
     $usernumber ++;
-    $checkbox = html_writer:: checkbox('','',false);
+    $checkbox = html_writer:: checkbox('selecteduser',$user->id,false);
     $usernumberlink = $OUTPUT->action_link( $url, $usernumber, $action);
     $link = new moodle_url('/mod/vpl/forms/edit.php', array('id' => $id, 'userid' => $user->id, 'privatecopy' => 1));
     $actions->add(vpl_get_action_link('copy', $link));
@@ -706,11 +722,14 @@ if ($subselection != 'notgraded') {
 echo '<br>';
 @ob_flush();
 flush();
-echo '<form action="./extension.php">';
+
+
+
 echo html_writer::table( $table );
-$button=html_writer::tag('input','',['type'=>'submit','value'=>'Grant Extension','class'=>'btn btn-primary ']);
-echo html_writer::div( $button,'text-center');
-echo '</form>';
+
+
+$gradingbatchoperationsform->display();
+
 if (count( $ngrades ) > 0) {
     echo '<br>';
     echo html_writer::table( $tablegraders );

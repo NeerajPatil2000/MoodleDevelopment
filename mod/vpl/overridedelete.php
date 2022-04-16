@@ -32,7 +32,7 @@ $overrideid = required_param('id', PARAM_INT);
 $confirm = optional_param('confirm', false, PARAM_BOOL);
 
 if (! $override = $DB->get_record('vpl_overrides', array('id' => $overrideid))) {
-    print_error('invalidoverrideid', 'assign');
+    print_error('invalidoverrideid', 'vpl');
 }
 
 list($course, $cm) = get_course_and_cm_from_instance($override->vplid, 'vpl');
@@ -68,13 +68,13 @@ if ($confirm) {
 
     $vpl->delete_override($override->id);
 
-    // reorder_group_overrides($assign->get_instance()->id);
+    vpl_reorder_group_overrides($vpl->get_instance()->id);
 
     redirect($cancelurl);
 }
 
 // Prepare the page to show the confirmation form.
-$stroverride = get_string('override', 'assign');
+$stroverride = get_string('override', 'vpl');
 $title = get_string('deletecheck', null, $stroverride);
 
 $PAGE->set_url($url);
@@ -88,13 +88,13 @@ echo $OUTPUT->heading(format_string($vpl->get_instance()->name, true, array('con
 
 if ($override->groupid) {
     $group = $DB->get_record('groups', array('id' => $override->groupid), 'id, name');
-    $confirmstr = get_string("overridedeletegroupsure", "assign", $group->name);
+    $confirmstr = get_string("overridedeletegroupsure", "vpl", $group->name);
 } else {
     $userfieldsapi = \core_user\fields::for_name();
     $namefields = $userfieldsapi->get_sql('', false, '', '', false)->selects;
     $user = $DB->get_record('user', array('id' => $override->userid),
             'id, ' . $namefields);
-    $confirmstr = get_string("overridedeleteusersure", "assign", fullname($user));
+    $confirmstr = get_string("overridedeleteusersure", "vpl", fullname($user));
 }
 
 echo $OUTPUT->confirm($confirmstr, $confirmurl, $cancelurl);

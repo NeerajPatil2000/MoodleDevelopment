@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// changes on lines 27,28,29,36,38,39
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot.'/mod/vpl/lib.php');
 require_once($CFG->dirroot.'/mod/vpl/locallib.php');
@@ -43,7 +42,6 @@ require_login($course, false, $cm);
 $context = context_module::instance($cm->id);
 
 // Check the user has the required capabilities to list overrides.
-// TODO :: modify the capability so that only authorised users have access.
 require_capability('mod/vpl:manageoverrides', $context);
 
 $vplgroupmode = groups_get_activity_groupmode($cm);
@@ -274,7 +272,6 @@ foreach ($overrides as $override) {
         $table->data[] = $row;
     }
 }
-// TODO :: add the required strings to the vpl plugin
 // Output the table and button.
 echo html_writer::start_tag('div', array('id' => 'vploverrides'));
 if (count($table->data)) {

@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Settings form for overrides in the assign module.
+ * Settings form for overrides in the vpl module.
  *
- * @package    mod_assign
- * @copyright  2016 Ilya Tregubov
+ * @package    mod_vpl
+ * @copyright  2022 Neeraj Patil
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,7 +26,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/formslib.php');
-require_once($CFG->dirroot . '/mod/assign/mod_form.php');
 
 
 /**
@@ -40,10 +39,10 @@ class vpl_override_form extends moodleform {
     /** @var object course module object. */
     protected $cm;
 
-    /** @var object the assign settings object. */
+    /** @var object the vpl settings object. */
     protected $vpl;
 
-    /** @var context the assign context. */
+    /** @var context the vpl context. */
     protected $context;
 
     /** @var bool editing group override (true) or user override (false). */
@@ -66,7 +65,7 @@ class vpl_override_form extends moodleform {
      * @param moodle_url $submiturl the form action URL.
      * @param object $cm course module object.
      * @param object $vpl the vpl settings object.
-     * @param object $context the assign context.
+     * @param object $context the vpl context.
      * @param bool $groupmode editing group override (true) or user override (false).
      * @param object $override the override being edited, if it already exists.
      * @param int $selecteduserid the user selected in the form, if any.
@@ -99,7 +98,7 @@ class vpl_override_form extends moodleform {
         // var_dump($vplinstance);
         $inrelativedatesmode = !empty($this->vpl->get_course()->relativedatesmode); // get_course method is present
 
-        $mform->addElement('header', 'override', get_string('override', 'assign'));
+        $mform->addElement('header', 'override', get_string('override', 'vpl'));
 
         $vplgroupmode = groups_get_activity_groupmode($cm);
         $accessallgroups = ($vplgroupmode == NOGROUPS) || has_capability('moodle/site:accessallgroups', $this->context);
@@ -124,7 +123,7 @@ class vpl_override_form extends moodleform {
                 if (empty($groups)) {
                     // Generate an error.
                     $link = new moodle_url('/mod/vpl/overrides.php', array('cmid' => $cm->id));
-                    print_error('groupsnone', 'assign', $link);
+                    print_error('groupsnone', 'vpl', $link);
                 }
 
                 $groupchoices = array();
@@ -138,7 +137,7 @@ class vpl_override_form extends moodleform {
                 }
 
                 $mform->addElement('select', 'groupid',
-                        get_string('overridegroup', 'assign'), $groupchoices);
+                        get_string('overridegroup', 'vpl'), $groupchoices);
                 $mform->addRule('groupid', get_string('required'), 'required', null, 'client');
             }
         } else {
@@ -149,7 +148,7 @@ class vpl_override_form extends moodleform {
                 $userchoices = array();
                 $userchoices[$this->userid] = fullname($user);
                 $mform->addElement('select', 'userid',
-                        get_string('overrideuser', 'assign'), $userchoices);
+                        get_string('overrideuser', 'vpl'), $userchoices);
                 $mform->freeze('userid');
             } else {
                 // Prepare the list of users.
@@ -232,50 +231,29 @@ class vpl_override_form extends moodleform {
 
                 $groupelements = [];
                 $groupelements[] = $mform->createElement('html', $html);
-                $mform->addGroup($groupelements, null, get_string('userassignmentdefaults', 'mod_assign'), null, false);
+                $mform->addGroup($groupelements, null, get_string('userassignmentdefaults', 'vpl'), null, false);
             }
         }
 
         $users = $DB->get_fieldset_select('groups_members', 'userid', 'groupid = ?', array($this->groupid));
-        array_push($users, $this->userid);
-        $extensionmax = 0;
-        foreach ($users as $value) {
-            // $extension = $DB->get_record('assign_user_flags', array('assignment' => $assigninstance->id,
-            //     'userid' => $value));
-            $extension= null;
-            if ($extension) {
-                if ($extensionmax < $extension->extensionduedate) {
-                    $extensionmax = $extension->extensionduedate;
-                }
-            }
-        }
-
-        if ($extensionmax) {
-            $vplinstance->extensionduedate = $extensionmax;
-        }
-
+        array_push($users, $this->userid);      
         // Open and close dates.
         $mform->addElement('date_time_selector', 'startdate',
-            get_string('allowsubmissionsfromdate', 'assign'), array('optional' => true));
+            get_string('startdate', 'vpl'), array('optional' => true));
         $mform->setDefault('allowsubmissionsfromdate', $vplinstance->startdate);
 
-        $mform->addElement('date_time_selector', 'duedate', get_string('duedate', 'assign'), array('optional' => true));
+        $mform->addElement('date_time_selector', 'duedate', get_string('duedate', 'vpl'), array('optional' => true));
         $mform->setDefault('duedate', $vplinstance->duedate);
-
-        if (isset($vplinstance->extensionduedate)) {
-            $mform->addElement('static', 'extensionduedate', get_string('extensionduedate', 'assign'),
-                userdate($vplinstance->extensionduedate));
-        }
 
         // Submit buttons.
         $mform->addElement('submit', 'resetbutton',
-                get_string('reverttodefaults', 'assign'));
+                get_string('reverttodefaults', 'vpl'));
 
         $buttonarray = array();
         $buttonarray[] = $mform->createElement('submit', 'submitbutton',
-                get_string('save', 'assign'));
+                get_string('save', 'vpl'));
         $buttonarray[] = $mform->createElement('submit', 'againbutton',
-                get_string('saveoverrideandstay', 'assign'));
+                get_string('saveoverrideandstay', 'vpl'));
         $buttonarray[] = $mform->createElement('cancel');
 
         $mform->addGroup($buttonarray, 'buttonbar', '', array(' '), false);
@@ -309,16 +287,10 @@ class vpl_override_form extends moodleform {
             }
         }
 
-        // Ensure that the dates make sense.
-        // if (!empty($data['allowsubmissionsfromdate']) && !empty($data['cutoffdate'])) {
-        //     if ($data['cutoffdate'] < $data['allowsubmissionsfromdate']) {
-        //         $errors['cutoffdate'] = get_string('cutoffdatefromdatevalidation', 'assign');
-        //     }
-        // }
 
         if (!empty($data['startdate']) && !empty($data['duedate'])) {
             if ($data['duedate'] < $data['startdate']) {
-                $errors['duedate'] = get_string('duedatevalidation', 'assign');
+                $errors['duedate'] = get_string('duedatevalidation', 'vpl');
             }
         }
 
@@ -333,7 +305,7 @@ class vpl_override_form extends moodleform {
         }
 
         if (!$changed) {
-            $errors['allowsubmissionsfromdate'] = get_string('nooverridedata', 'assign');
+            $errors['allowsubmissionsfromdate'] = get_string('nooverridedata', 'vpl');
         }
 
         return $errors;

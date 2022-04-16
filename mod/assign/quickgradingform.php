@@ -42,7 +42,6 @@ class mod_assign_quick_grading_form extends moodleform {
     public function definition() {
         $mform = $this->_form;
         $instance = $this->_customdata;
-        var_dump($instance['gradingtable']);
         // Visible elements.
         $mform->addElement('html', $instance['gradingtable']);
 

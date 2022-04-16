@@ -35,8 +35,9 @@ $action = optional_param('action', null, PARAM_ALPHA);
 $reset = optional_param('reset', false, PARAM_BOOL);
 $uid = optional_param('uid', null, PARAM_INT);
 $userchange = optional_param('userchange', false, PARAM_BOOL);
-
+$users = optional_param('selecteduser',null, PARAM_SEQUENCE);
 $pagetitle = get_string('editoverride', 'vpl');
+
 
 $override = null;
 if ($overrideid) {
@@ -76,7 +77,6 @@ $shouldadduserid = $uid && !empty($course->relativedatesmode);
 $shouldresetform = optional_param('resetbutton', 0, PARAM_ALPHA) || ($userchange && $action !== 'duplicate');
 
 // Add or edit an override.
-// TODO :: add the required capabilities
 require_capability('mod/vpl:manageoverrides', $context);
 
 if ($overrideid) {
@@ -114,7 +114,7 @@ if ($action === 'duplicate') {
     $override->id = $data->id = null;
     $override->userid = $data->userid = null;
     $override->groupid = $data->groupid = null;
-    $pagetitle = get_string('duplicateoverride', 'assign');
+    $pagetitle = get_string('duplicateoverride', 'vpl');
 }
 
 if ($shouldadduserid) {
@@ -124,6 +124,12 @@ if ($shouldadduserid) {
 $overridelisturl = new moodle_url('/mod/vpl/overrides.php', array('cmid' => $cm->id));
 if (!$groupmode) {
     $overridelisturl->param('mode', 'user');
+}
+
+if($action == 'grantextension')
+{
+    $userlist = explode(',', $users);
+    $data->userid = $userlist;
 }
 // Setup the form.
 $mform = new vpl_override_form($url, $cm, $vpl, $context, $groupmode, $override);
@@ -141,7 +147,6 @@ if ($mform->is_cancelled()) {
 
 } else if (!$userchange && $fromform = $mform->get_data()) {
 
-    var_dump($fromform);
     foreach ($fromform->userid as $userid) {
     $fromform->vplid = $vplinstance->id;
 
@@ -228,8 +233,7 @@ if ($mform->is_cancelled()) {
             }
 
             $DB->update_record('vpl_overrides', $fromform);
-            //TODO :: Add this
-            // reorder_group_overrides($assigninstance->id);
+            vpl_reorder_group_overrides($vplinstance->id);
         }
         // $cachekey = $groupmode ? "{$fromform->assignid}_g_{$fromform->groupid}" : "{$fromform->assignid}_u_{$fromform->userid}";
         // cache::make('mod_vpl', 'overrides')->delete($cachekey);
