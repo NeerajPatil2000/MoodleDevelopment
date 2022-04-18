@@ -377,6 +377,33 @@ function xmldb_vpl_upgrade_2021011014() {
     }
 }
 
+function xmldb_vpl_upgrade_2021052515() {
+    global $DB;
+        // Define table vpl_overrides to be created.
+        $dbman = $DB->get_manager();
+        $table = new xmldb_table('vpl_overrides');
+
+        // Adding fields to table vpl_overrides.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('vplid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('groupid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('startdate', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('duedate', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table vpl_overrides.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('vplid', XMLDB_KEY_FOREIGN, ['vplid'], 'vpl', ['id']);
+        $table->add_key('groupid', XMLDB_KEY_FOREIGN, ['groupid'], 'groups', ['id']);
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+
+        // Conditionally launch create table for vpl_overrides.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+}
+
 /**
  * Upgrades VPL DB and data to the new version
  *
@@ -416,39 +443,9 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         xmldb_vpl_upgrade_2021011014();
         upgrade_mod_savepoint(true, $vpl34, 'vpl');
     }
-    if ($oldversion < 2021052514) {
-
-        // Define table vpl_overrides to be created.
-        global $DB;
-
-        $dbman = $DB->get_manager();
-        $table = new xmldb_table('vpl_overrides');
-
-        // Adding fields to table vpl_overrides.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('vplid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('groupid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('startdate', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $table->add_field('duedate', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-
-        // Adding keys to table vpl_overrides.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('vplid', XMLDB_KEY_FOREIGN, ['vplid'], 'vpl', ['id']);
-        $table->add_key('groupid', XMLDB_KEY_FOREIGN, ['groupid'], 'groups', ['id']);
-        $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
-
-        // Conditionally launch create table for vpl_overrides.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        // Vpl savepoint reached.
-        upgrade_mod_savepoint(true, 2021052514, 'vpl');
-    }
-
     if ($oldversion < 2021052515) {
+        xmldb_vpl_upgrade_2021052515();
+        // Vpl savepoint reached.
         upgrade_mod_savepoint(true, 2021052515, 'vpl');
     }
     return true;
