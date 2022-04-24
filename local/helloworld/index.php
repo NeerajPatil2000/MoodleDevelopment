@@ -38,6 +38,8 @@ $PAGE->navbar->add(get_string('sayhello','local_helloworld'), new moodle_url('/l
 $id = optional_param('id', -1, PARAM_INT);
 if($id != -1)
 {
+  $sesskey = required_param('id', -1, PARAM_INT);
+  require_sesskey();
   $DB->delete_records("local_helloworld_msgs", ['id' => $id]);
 }
 
@@ -100,7 +102,7 @@ if ($mform->is_cancelled()) {
       foreach ($data as $entry) 
       { 
         $deleteurlstr = $deleteurl->out(true,
-            array('id' => $entry->id));
+            array('id' => $entry->id,'sesskey' => sesskey()));
         $message = $entry->message;
         $info='- '.$entry->username.','.userdate($entry->timecreated);
         $out.=html_writer::start_tag('div',['class'=>"card"]);
