@@ -1,5 +1,19 @@
 document.onreadystatechange = () => {
     if (document.readyState === 'complete') {
+      let selectall = document.querySelector("input[type=checkbox][name=selectall]");
+      selectall.addEventListener('change', function() {
+        if (this.checked) {
+          let checkedBoxes = document.querySelectorAll('input[type=checkbox][name=selecteduser]');
+          for (let i = 0; i < checkedBoxes.length; i++) {
+            checkedBoxes[i].checked = true;
+          }
+        } else {
+          let checkedBoxes = document.querySelectorAll('input[type=checkbox][name=selecteduser]');
+          for (let i = 0; i < checkedBoxes.length; i++) {
+            checkedBoxes[i].checked = false;
+          }
+        }
+      });
         var submit = document.querySelector("#id_submit");
         if (submit) {
         submit.onclick = function(event) {

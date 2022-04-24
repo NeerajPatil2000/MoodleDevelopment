@@ -238,6 +238,8 @@ if ($evaluate > 0) {
 }
 
 $vpl = new mod_vpl( $id );
+$vplinstance = $vpl->get_instance();
+$duedate = $vplinstance->duedate;
 $vpl->prepare_page( 'views/submissionslist.php', array (
         'id' => $id
 ) );
@@ -338,6 +340,7 @@ foreach ($list as $uginfo) {
     }
     $alldata [] = $data;
 }
+$vpl->print_submission_period();
 $groupsurl = vpl_mod_href( 'views/submissionslist.php', 'id', $id, 'sort', $sort, 'sortdir', $sortdir, 'selection', $subselection );
 // Unblock user session.
 session_write_close();
@@ -374,12 +377,12 @@ $hrefnsub = vpl_mod_href( 'views/activityworkinggraph.php', 'id', $id );
 $action = new popup_action( 'click', $hrefnsub, 'activityworkinggraph' . $id, $options );
 $linkworkinggraph = $OUTPUT->action_link( $hrefnsub, get_string( 'submissions', VPL ), $action );
 $strsubmisions = $linkworkinggraph . vpl_submissionlist_arrow( $baseurl, 'nsubmissions', $sort, $sortdir );
-
+$selectall = html_writer ::checkbox('selectall','',false,'select all users',null,['hidden'=>'hidden']);
 $table = new html_table();
 if ($showgrades) {
     $table->head = array (
             '',
-            'Select',
+            'Select </br>'.$selectall,
             '',
             $namesortselect,
             $strgrade,
@@ -400,7 +403,7 @@ if ($showgrades) {
 } else if ($gradeable) {
     $table->head = array (
             '',
-            'Select',
+            'Select </br>'.$selectall,
             '',
             $namesortselect,
             $strsubtime,
@@ -431,7 +434,7 @@ if ($showgrades) {
 } else {
     $table->head = array (
             '',
-            'Select',
+            'Select </br>'.$selectall,
             '',
             $namesortselect,
             $strsubtime,
@@ -484,6 +487,7 @@ foreach ($alldata as $data) {
         $hrefview = vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $user->id, 'inpopup', 1 );
         $action = new popup_action( 'click', $hrefview, 'viewsub' . $user->id, $options );
         $subtime = $OUTPUT->action_link( $hrefview, $text, $action );
+        $diff=$subtime;
         $link = new moodle_url('/mod/vpl/forms/submissionview.php', $linkparms);
         $actions->add(vpl_get_action_link('submissionview', $link));
         $prev = '';
@@ -499,6 +503,11 @@ foreach ($alldata as $data) {
         $link = new moodle_url('/mod/vpl/forms/submissionview.php', $linkparms);
         $actions->add(vpl_get_action_link('submissionview', $link));
         $subtime = $OUTPUT->action_link( $hrefview, userdate( $subinstance->datesubmitted ) );
+        if($subinstance->datesubmitted > $duedate) {
+            $diff=html_writer::tag('font', $subtime.' Assignment is overdue by: '.format_time($subinstance->datesubmitted - $duedate), ['color' => 'red']);
+        } else {
+            $diff=$subtime;
+        } 
         if ($subinstance->nsubmissions > 0) {
             $prev = $OUTPUT->action_link( $hrefprev, $subinstance->nsubmissions );
             $link = new moodle_url('/mod/vpl/views/previoussubmissionslist.php', $linkparms);
@@ -599,7 +608,7 @@ foreach ($alldata as $data) {
     );
     $action = new popup_action( 'click', $url, 'privatecopyl' . $id, $options );
     $usernumber ++;
-    $checkbox = html_writer:: checkbox('selecteduser',$user->id,false);
+    $checkbox = html_writer:: checkbox('selecteduser',$user->id,false,'student '.$user->id,null,['hidden'=>'hidden']);
     $usernumberlink = $OUTPUT->action_link( $url, $usernumber, $action);
     $link = new moodle_url('/mod/vpl/forms/edit.php', array('id' => $id, 'userid' => $user->id, 'privatecopy' => 1));
     $actions->add(vpl_get_action_link('copy', $link));
@@ -619,7 +628,7 @@ foreach ($alldata as $data) {
                 $checkbox,
                 $showphoto ? $vpl->user_picture( $user) : '',
                 $vpl->fullname( $user, !$showphoto),
-                $subtime,
+                $diff,
                 $prev,
                 $grade,
                 $grader,
@@ -632,7 +641,7 @@ foreach ($alldata as $data) {
                 $checkbox,
                 $showphoto ? $vpl->user_picture( $user) : '',
                 $vpl->fullname( $user, !$showphoto),
-                $subtime,
+                $diff,
                 $prev,
                 $OUTPUT->render($actions)
         );
@@ -745,3 +754,4 @@ if (count( $nextids )) {
     echo '</div>';
 }
 $vpl->print_footer();
+

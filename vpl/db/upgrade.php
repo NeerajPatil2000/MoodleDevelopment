@@ -450,3 +450,4 @@ function xmldb_vpl_upgrade($oldversion = 0) {
     }
     return true;
 }
+
