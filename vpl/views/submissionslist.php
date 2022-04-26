@@ -253,14 +253,14 @@ $gradingbatchoperationsform = new mod_vpl_grading_batch_operations_form(null,$ba
 
 if ($fromform = $gradingbatchoperationsform->get_data()) {
   //In this case you process validated data. $mform->get_data() returns data posted in form.
-  $overrideediturl = new moodle_url('/mod/vpl/overrideedit.php',array('cmid'=> $cm->id,'action'=>$fromform->action,'selecteduser'=>$fromform->selecteduser));
+  $overrideediturl = new moodle_url('/mod/vpl/grantextension.php',array('cmid'=> $cm->id,'action'=>$fromform->action,'selecteduser'=>$fromform->selecteduser));
   redirect($overrideediturl);
   
 } 
 
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 // This file is necessary to implement the grant extension functionality.
-$PAGE->requires->js(new moodle_url($CFG->wwwroot.'/mod/vpl/amd/src/index.js'));
+$PAGE->requires->js(new moodle_url($CFG->wwwroot.'/mod/vpl/amd/src/submissionlist.js'));
 // Print header.
 $vpl->print_header( get_string( 'submissionslist', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
@@ -754,4 +754,3 @@ if (count( $nextids )) {
     echo '</div>';
 }
 $vpl->print_footer();
-
