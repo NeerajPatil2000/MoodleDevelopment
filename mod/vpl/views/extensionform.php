@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
  * Vpl extension dates form
  *
  * @package   mod_vpl
- * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @copyright 2022 Neeraj Patil
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_vpl_extension_form extends moodleform {
