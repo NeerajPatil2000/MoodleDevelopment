@@ -1716,22 +1716,16 @@ class mod_vpl {
         $record = $DB->get_record('vpl_overrides',['userid'=>$userid]);
         if($record)
         {
+            $this->print_restriction( 'startdate', userdate( $this->instance->startdate ) );
+            $this->print_restriction( 'duedate', userdate( $this->instance->duedate ) );
             if($record->startdate)
             {
-                $this->print_restriction( 'startdate', userdate( $record->startdate ) );
-            }
-            else
-            {
-                $this->print_restriction( 'startdate', userdate( $this->instance->startdate ) );
+                $this->print_restriction( 'modifiedstartdate', userdate( $record->startdate ) );
             }
             if($record->duedate)
             {
-                $this->print_restriction( 'duedate', userdate( $record->duedate ) );
-            }
-            else
-            {
-                $this->print_restriction( 'duedate', userdate( $this->instance->duedate ) );
-            }
+                $this->print_restriction( 'modifiedduedate', userdate( $record->duedate ) );
+            }  
         }
         else{
             if ($this->instance->startdate) {
