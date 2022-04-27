@@ -1063,6 +1063,10 @@ class mod_vpl {
      * @return bool
      *
      */
+    /**
+     * Modified this function so that it considers the granted extension as well.
+     * @author Neeraj Patil
+     */
     public function is_submission_period() {
         global $USER, $DB;
         $userid = $USER->id;
@@ -1707,6 +1711,10 @@ class mod_vpl {
 
     /**
      * Show vpl submission period
+     */
+    /**
+     *  Made some changes to this function so that it can display the modified start date and due date.
+     * @author Neeraj Patil.
      */
     public function print_submission_period($userid = 0) {
         global $DB;

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the forms to create and edit an instance of this module
+ * Vpl extension dates form
  *
  * @package   mod_vpl
  * @copyright 2022 Neeraj Patil
