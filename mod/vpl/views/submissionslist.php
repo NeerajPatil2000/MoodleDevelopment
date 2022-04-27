@@ -218,6 +218,11 @@ function vpl_get_action_link($str, $link, $comp = 'mod_vpl') {
     return new action_menu_link_secondary($link, new pix_icon($str, '', 'mod_vpl'),  $stri18n);
 }
 
+/**
+ * Made some changes to implement the grant extension functionality similar to that in assignments.
+ * @author Neeraj Patil
+ */
+
 require_login();
 
 $id = required_param( 'id', PARAM_INT );
