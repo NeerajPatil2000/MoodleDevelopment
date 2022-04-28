@@ -258,9 +258,10 @@ $gradingbatchoperationsform = new mod_vpl_grading_batch_operations_form(null,$ba
 
 if ($fromform = $gradingbatchoperationsform->get_data()) {
   //In this case you process validated data. $mform->get_data() returns data posted in form.
-  $overrideediturl = new moodle_url('/mod/vpl/grantextension.php',array('cmid'=> $cm->id,'action'=>$fromform->action,'selecteduser'=>$fromform->selecteduser));
-  redirect($overrideediturl);
-  
+    if($fromform->action == 'grantextension') {
+        $overrideediturl = new moodle_url('/mod/vpl/grantextension.php',array('cmid'=> $cm->id,'action'=>$fromform->action,'selecteduser'=>$fromform->selecteduser));
+        redirect($overrideediturl);
+    }
 } 
 
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
