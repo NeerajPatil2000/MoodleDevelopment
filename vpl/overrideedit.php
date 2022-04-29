@@ -126,11 +126,6 @@ if (!$groupmode) {
     $overridelisturl->param('mode', 'user');
 }
 
-if($action == 'grantextension')
-{
-    $userlist = explode(',', $users);
-    $data->userid = $userlist;
-}
 // Setup the form.
 $mform = new vpl_override_form($url, $cm, $vpl, $context, $groupmode, $override);
 $mform->set_data($data);

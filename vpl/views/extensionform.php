@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 
-
 class mod_vpl_extension_form extends moodleform {
     /** @var array $instance - The data passed to this form */
     private $instance;

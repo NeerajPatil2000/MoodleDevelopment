@@ -443,6 +443,10 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         xmldb_vpl_upgrade_2021011014();
         upgrade_mod_savepoint(true, $vpl34, 'vpl');
     }
+    /**
+     * Added to create the grant extension functionality
+     * @author Neeraj Patil
+     */
     if ($oldversion < 2021052515) {
         xmldb_vpl_upgrade_2021052515();
         // Vpl savepoint reached.
