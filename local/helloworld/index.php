@@ -38,7 +38,7 @@ $PAGE->navbar->add(get_string('sayhello','local_helloworld'), new moodle_url('/l
 $id = optional_param('id', -1, PARAM_INT);
 if($id != -1)
 {
-  $sesskey = required_param('id', -1, PARAM_INT);
+  // $sesskey = required_param('id', -1, PARAM_INT);
   require_sesskey();
   $DB->delete_records("local_helloworld_msgs", ['id' => $id]);
 }
@@ -63,7 +63,7 @@ $mform = new simplehtml_form($target=new moodle_url($CFG->httpswwwroot.'/local/h
 $toform=[];
 global $USER;
 $systemcontext = context_system::instance();
-$deleteurl = new moodle_url('/local/helloworld/index.php');
+
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
@@ -88,6 +88,7 @@ if ($mform->is_cancelled()) {
       else
       {
         $ins = new stdClass();
+        require_sesskey();
         $ins->message = $fromform->message;
         $ins->timecreated =time();
         $ins->userid = $USER->id;
@@ -101,8 +102,7 @@ if ($mform->is_cancelled()) {
       $out.=html_writer::start_tag('div',['class'=>"card-columns"]);
       foreach ($data as $entry) 
       { 
-        $deleteurlstr = $deleteurl->out(true,
-            array('id' => $entry->id,'sesskey' => sesskey()));
+        $deleteurl = new moodle_url('/local/helloworld/index.php',array('id' => $entry->id,'sesskey' => sesskey()));
         $message = $entry->message;
         $info='- '.$entry->username.','.userdate($entry->timecreated);
         $out.=html_writer::start_tag('div',['class'=>"card"]);
@@ -112,7 +112,7 @@ if ($mform->is_cancelled()) {
         $out.=html_writer::tag('p',$result,['class'=>"card-text"]);
         if(has_capability('local/helloworld:deleteanymessage',$systemcontext,$USER->id))
         {
-          $out.= '<a title="' . get_string('delete') . '" href="' . $deleteurlstr . '">' .
+          $out.= '<a title="' . get_string('delete') . '" href="' .$deleteurl . '">' .
           $OUTPUT->pix_icon('t/delete', get_string('delete')) . '</a> ';
         }
         $out.=html_writer::end_tag('div');
@@ -139,11 +139,9 @@ if ($mform->is_cancelled()) {
     $out.=html_writer::start_tag('div',['class'=>"card-columns"]);
     foreach ($data as $entry) 
     {
-      $deleteurlstr = $deleteurl->out(true,
-            array('id' => $entry->id)); 
+      $deleteurl = new moodle_url('/local/helloworld/index.php',array('id' => $entry->id,'sesskey' => sesskey()));
       $message = $entry->message;
       $info='- '.$entry->username.','.userdate($entry->timecreated);
-      
       $out.=html_writer::start_tag('div',['class'=>"card"]);
       $out.=html_writer::start_tag('div',['class'=>"card-body"]);
       $out.=html_writer::tag('p',$message,['class'=>"card-text"]);
@@ -151,7 +149,7 @@ if ($mform->is_cancelled()) {
       $out.=html_writer::tag('p',$result,['class'=>"card-text"]);
       if(has_capability('local/helloworld:deleteanymessage',$systemcontext,$USER->id))
       {
-        $out.= '<a title="' . get_string('delete') . '" href="' . $deleteurlstr . '">' .
+        $out.= '<a title="' . get_string('delete') . '" href="' . $deleteurl . '">' .
         $OUTPUT->pix_icon('t/delete', get_string('delete')) . '</a> ';
       }
       $out.=html_writer::end_tag('div');

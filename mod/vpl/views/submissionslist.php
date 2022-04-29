@@ -253,11 +253,13 @@ $cm = $vpl->get_course_module();
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
 \mod_vpl\event\vpl_all_submissions_viewed::log( $vpl );
 
+// This form is added to implement the grant extension functionality
 $batchformparams = array('cm'=>$cm->id);
 $gradingbatchoperationsform = new mod_vpl_grading_batch_operations_form(null,$batchformparams,'post');
 
 if ($fromform = $gradingbatchoperationsform->get_data()) {
   //In this case you process validated data. $mform->get_data() returns data posted in form.
+  // One can edit the mod_vpl_grading_batch_operations_form to add more functionalities such as lock submissions.
     if($fromform->action == 'grantextension') {
         $overrideediturl = new moodle_url('/mod/vpl/grantextension.php',array('cmid'=> $cm->id,'action'=>$fromform->action,'selecteduser'=>$fromform->selecteduser));
         redirect($overrideediturl);

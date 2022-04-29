@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This page handles editing and creation of vpl overrides
+ * This page is used to implement the grant extension functionality
  *
  * @package   mod_vpl
  * @copyright 2022 Neeraj Patil

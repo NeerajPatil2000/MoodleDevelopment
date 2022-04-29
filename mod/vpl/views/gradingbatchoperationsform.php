@@ -22,7 +22,6 @@
  */
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 require_once("$CFG->libdir/formslib.php");
-
 class mod_vpl_grading_batch_operations_form extends moodleform
 {
 
