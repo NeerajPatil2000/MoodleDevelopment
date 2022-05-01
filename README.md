@@ -8,7 +8,7 @@ Vpl is an activity module which helps in managing programming assignments in Moo
     sudo service apache2 restart
 ```  
 5. Then you can login as admin into Moodle. Go to Site Administration > Plugins > Install Plugins and use the downloaded zip file to install the plugin.
-![This is an image](/images/plugininstaller.png)
+![Site Administration > Plugins > Install Plugins](/images/plugininstaller.png)
 6. If you have a write permission error, then you can use the following command 
 ```
     sudo chmod -R 0777 /var/www/html/moodle
