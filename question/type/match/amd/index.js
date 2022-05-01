@@ -1,6 +1,9 @@
 /* eslint-disable no-console */
 require(['jquery'], function($) {
     $(window).on('load', (function() {
+        $('.MathJax_Display').each(function() {
+            $(this).attr('style', 'display:inline !important');
+        });
 // Finding all the <div></div> elements with the class matching which was added by me.
 // These div tags enclose the custom dropdown created by other team.
         window.console.log($('.MathJax_Display'));

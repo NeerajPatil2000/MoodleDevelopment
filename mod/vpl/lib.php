@@ -783,8 +783,7 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
             $parms = array ( 'id' => $cmid );
         }
 
-        // TODO :: add capabilities so that only authorised users can override
-        // adding a navigation node for group override
+        
         if (has_capability('mod/vpl:manageoverrides', $PAGE->cm->context)) {
             $groupoverrideparams = array('cmid' => $cmid, 'mode' => 'group'); 
             $url = new moodle_url( '/mod/vpl/overrides.php', $groupoverrideparams);

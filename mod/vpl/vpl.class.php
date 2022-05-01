@@ -202,7 +202,10 @@ class mod_vpl {
         $this->requiredfgm = null;
         $this->executionfgm = null;
     }
-
+    /**
+     * This method is called to delete an override.
+     * @author Neeraj Patil 
+     */
     public function delete_override($overrideid) {
         global $CFG, $DB;
 
@@ -220,10 +223,8 @@ class mod_vpl {
         $conds = array('modulename' => 'vpl', 'instance' => $this->get_instance()->id);
         if (isset($override->userid)) {
             $conds['userid'] = $override->userid;
-            $cachekey = "{$cm->instance}_u_{$override->userid}";
         } else {
             $conds['groupid'] = $override->groupid;
-            $cachekey = "{$cm->instance}_g_{$override->groupid}";
         }
         $events = $DB->get_records('event', $conds);
         foreach ($events as $event) {
@@ -232,29 +233,6 @@ class mod_vpl {
         }
 
         $DB->delete_records('vpl_overrides', array('id' => $overrideid));
-        // TODO:: understand and use the below code
-        // cache::make('mod_assign', 'overrides')->delete($cachekey);
-
-        // Set the common parameters for one of the events we will be triggering.
-        // $params = array(
-        //     'objectid' => $override->id,
-        //     'context' => context_module::instance($cm->id),
-        //     'other' => array(
-        //         'assignid' => $override->assignid
-        //     )
-        // );
-        // // Determine which override deleted event to fire.
-        // if (!empty($override->userid)) {
-        //     $params['relateduserid'] = $override->userid;
-        //     $event = \mod_assign\event\user_override_deleted::create($params);
-        // } else {
-        //     $params['other']['groupid'] = $override->groupid;
-        //     $event = \mod_assign\event\group_override_deleted::create($params);
-        // }
-
-        // // Trigger the override deleted event.
-        // $event->add_record_snapshot('assign_overrides', $override);
-        // $event->trigger();
 
         return true;
     }
