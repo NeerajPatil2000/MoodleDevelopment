@@ -1048,7 +1048,8 @@ class mod_vpl {
     public function is_submission_period() {
         global $USER, $DB;
         $userid = $USER->id;
-        $record = $DB->get_record('vpl_overrides',['userid'=>$userid]);
+        $vplid = $this->instance->id;
+        $record = $DB->get_record('vpl_overrides',['userid'=>$userid,'vplid'=>$vplid]);
         $now = time();
         if($record){
             if($record->startdate){
@@ -1699,7 +1700,7 @@ class mod_vpl {
         if ($this->instance->startdate == 0 && $this->instance->duedate == 0) {
             return;
         }
-        $record = $DB->get_record('vpl_overrides',['userid'=>$userid]);
+        $record = $DB->get_record('vpl_overrides',['userid'=>$userid,'vplid'=>$this->instance->id]);
         if($record)
         {
             $this->print_restriction( 'startdate', userdate( $this->instance->startdate ) );

@@ -13,7 +13,7 @@ require(['jquery'], function($) {
 
 // Getting the corresponding original drop-down.
             var c = $(d).attr('class').split(' ')[2];
-// If the original drop-down is disabled, the disabling the custom drop-down.
+// If the original drop-down is disabled, then disabling the custom drop-down.
             if ($('select.' + c).is(':disabled')) {
                 $(b).attr('disabled', 'disabled');
                 $('.MathJax_Display').attr('style', 'display:inline !important');
@@ -22,6 +22,7 @@ require(['jquery'], function($) {
                 $(this).find('li').click(function() {
                     $('.MathJax_Display').attr('style', 'display:inline !important');
                     $(b).html($(this).html());
+                    $(b > 'div').attr('style', 'display:inline !important');
                     var v = $(this).attr('value');
                     // eslint-disable-next-line no-unused-expressions
                     $('select.' + c).find('option:selected').removeAttr('selected');
@@ -33,7 +34,9 @@ require(['jquery'], function($) {
             }
             // Changing the html of the button tag to the html inside the selected list tag
             $(b).html($(d).find('[selected=selected]').html());
+            $(b > 'div').attr('style', 'display:inline !important');
         });
     })
     );
 });
+

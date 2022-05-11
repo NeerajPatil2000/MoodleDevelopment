@@ -100,7 +100,6 @@ if ($mform->is_cancelled()) {
         $dataobj->vplid = $vplinstance->id;
         $dataobj->userid=$userid;
         $dataobj->duedate=$fromform->extensionduedate;
-        var_dump($dataobj);
         $fromform->id = $DB->insert_record('vpl_overrides', $dataobj);
     }
     vpl_prepare_update_events($vpl);
