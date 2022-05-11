@@ -1,5 +1,7 @@
 # VPL
-This Project is a part of course CS4120 Project II at IIT Palakkad.
+This Project is a part of course CS4120 Project II at IIT Palakkad under the mentorship of Dr. Jasine Babu.
+
+## About VPL 
 Vpl is an activity module which helps in managing programming assignments in Moodle. I have tried to add the functionality of granting extension to  a vpl assignment. To try and test the changes which I have made you can follow the steps given below:
 1. First you have to install moodle. I have tried these changes for moodle version 3.11. You need to install a version greater than 3.5. You can follow this [link](https://docs.moodle.org/400/en/Step-by-step_Installation_Guide_for_Ubuntu) to install Moodle.
 2. Then you can download the zip file from this [link](https://drive.google.com/file/d/1znAP1K1fgBIFrH_1tlg2G2WATSHAoGAh/view?usp=sharing). This zip file is achieved by compressing the vpl directory in this repository.
